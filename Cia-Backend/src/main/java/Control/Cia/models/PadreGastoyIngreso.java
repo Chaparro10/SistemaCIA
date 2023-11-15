@@ -22,10 +22,6 @@ import java.time.LocalDate;
 @MappedSuperclass
 public abstract  class PadreGastoyIngreso {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id; // Identificador único común para Ingreso y Gasto
-
     LocalDate fecha; // Fecha del gasto
     String beneficiario; // Beneficiario del gasto
     String descripcion; // Descripción del gasto

@@ -1,9 +1,7 @@
 package Control.Cia.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +16,7 @@ import lombok.ToString;
 @Table(name = "Ingreso")
 public class Ingreso extends PadreGastoyIngreso {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long idIngreso; // Identificador único del Ingreso
 
 
