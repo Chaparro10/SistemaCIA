@@ -4,6 +4,7 @@ package Control.Cia.models;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 @NoArgsConstructor // Crea un constructor sin argumentos
 @AllArgsConstructor // Crea un constructor con todos los argumentos
 @ToString // Genera automáticamente el método toString()
+
+@MappedSuperclass
 public abstract  class PadreGastoyIngreso {
 
     @Id
@@ -26,6 +29,5 @@ public abstract  class PadreGastoyIngreso {
     LocalDate fecha; // Fecha del gasto
     String beneficiario; // Beneficiario del gasto
     String descripcion; // Descripción del gasto
-    char tipoPartida;
     BigDecimal monto; // Monto del gasto, utilizando BigDecimal para precisión en valores monetarios
 }
