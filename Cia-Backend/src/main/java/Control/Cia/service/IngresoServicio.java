@@ -5,9 +5,11 @@ import Control.Cia.models.Ingreso;
 import Control.Cia.repository.IGastoRepositorio;
 import Control.Cia.repository.IIngresoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class IngresoServicio implements IIngresoServicio{
 
     // Inyección de dependencia del repositorio de Gastos.
