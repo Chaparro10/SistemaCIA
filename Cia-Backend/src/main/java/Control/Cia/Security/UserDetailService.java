@@ -1,4 +1,4 @@
-package Control.Cia.Jwt;
+package Control.Cia.Security;
 
 import Control.Cia.models.Usuario;
 import Control.Cia.repository.IUsuarioRepositorio;
@@ -27,9 +27,9 @@ public class UserDetailService implements UserDetailsService {
         userDetail=usuarioRepositorio.findByEmail(username);
 
         if(!Objects.isNull((userDetail))){
-            return new org.springframework.security.core.userdetails.User(userDetail.getEmail(),userDetail.getPassword(),new ArrayList<>())
+            return new org.springframework.security.core.userdetails.User(userDetail.getEmail(),userDetail.getPassword(),new ArrayList<>());
         }else{
-            throw  new UsernameNotFoundException("Usuario no encontrado")
+            throw  new UsernameNotFoundException("Usuario no encontrado");
         }
 
     }

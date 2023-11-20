@@ -1,5 +1,6 @@
-package Control.Cia.Jwt;
+package Control.Cia.Security.jwt;
 
+import Control.Cia.Security.UserDetailService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    private  JwtUtil jwtutil;
+    private JwtUtil jwtutil;
 
     @Autowired
     private UserDetailService userDetailService;
