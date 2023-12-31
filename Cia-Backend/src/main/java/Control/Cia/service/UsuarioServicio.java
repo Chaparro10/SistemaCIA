@@ -1,17 +1,26 @@
 package Control.Cia.service;
 
 
+import Control.Cia.Security.SecurityConfig;
+import Control.Cia.Security.UserDetailService;
+import Control.Cia.Security.jwt.JwtUtil;
 import Control.Cia.Utils.FacturaUtils;
 import Control.Cia.excepcion.DataInvalida;
 import Control.Cia.excepcion.ServerError;
+import Control.Cia.models.Ingreso;
 import Control.Cia.models.Usuario;
 import Control.Cia.repository.IUsuarioRepositorio;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -25,6 +34,20 @@ public class UsuarioServicio implements IUsuarioServicio {
      */
     @Autowired
     private IUsuarioRepositorio usuarioRepositorio;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private  UserDetailService userDetailService;
+    @Autowired
+    private SecurityConfig securityConfig;
+
+
+    @Override
+    public List<Usuario> ListarUsuarios() {
+        return usuarioRepositorio.findAll();
+    }
 
 
     /**
@@ -33,6 +56,7 @@ public class UsuarioServicio implements IUsuarioServicio {
      * @param requestMap Un mapa que contiene los datos del usuario a ser registrado.
      * @return ResponseEntity<String> que indica el resultado del registro.
      */
+    // En tu método signUp de UsuarioServicio
     @Override
     public ResponseEntity<String> signUp(Map<String, String> requestMap) {
         try {
@@ -41,8 +65,16 @@ public class UsuarioServicio implements IUsuarioServicio {
                 // Verifica si el usuario ya existe en la base de datos
                 Usuario user = usuarioRepositorio.findByEmail(requestMap.get("email"));
                 if (Objects.isNull(user)) {
-                    // Si el usuario no existe, realiza el registro
-                    usuarioRepositorio.save(getUserFromMap(requestMap));
+                    // Hashea la contraseña antes de guardarla
+                    String hashedPassword = securityConfig.passwordEncoder().encode(requestMap.get("password"));
+
+                    // Crea el objeto Usuario con la contraseña hasheada
+                    Usuario newUser = getUserFromMap(requestMap);
+                    newUser.setPassword(hashedPassword);
+
+                    // Guarda el usuario en la base de datos
+                    usuarioRepositorio.save(newUser);
+
                     return FacturaUtils.getResponseEntity("Usuario Registrado con éxito", HttpStatus.CREATED);
                 } else {
                     // Si el usuario ya existe, devuelve un error
@@ -62,6 +94,45 @@ public class UsuarioServicio implements IUsuarioServicio {
         }
     }
 
+
+    /**
+     * Procesa la autenticación del usuario y genera un token JWT si las credenciales son válidas.
+     *
+     * @param requestMap Un mapa que contiene las credenciales del usuario (correo electrónico y contraseña).
+     * @return ResponseEntity con un mensaje o token JWT, y el código de estado HTTP correspondiente.
+     */
+    @Override
+    public ResponseEntity<String> Login(Map<String, String> requestMap) {
+        System.out.println("Dentro de login");
+        try {
+            // Intentar autenticar al usuario con las credenciales proporcionadas
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(requestMap.get("email"), requestMap.get("password"))
+            );
+
+            System.out.println(authentication);
+
+            if (authentication.isAuthenticated()) {
+                // Verificar el estado del usuario antes de generar el token
+                if (userDetailService.getUserDetail().isStatus()) {
+                    // Generar un token JWT y devolverlo en una ResponseEntity exitosa
+
+
+                    return new ResponseEntity<String>("{\"token\":\"" + jwtUtil.generateToken(userDetailService.getUserDetail().getEmail(), userDetailService.getUserDetail().getRole()) + "\"}", HttpStatus.OK);
+
+                } else {
+                    // Devolver un mensaje de error si el usuario no está aprobado
+                    return new ResponseEntity<String>("{\"mensaje\":\"" + " Espere la Aprobacion del Admin " + "\"}", HttpStatus.BAD_REQUEST);
+                }
+            }
+        } catch (Exception exception) {
+            // Imprimir la traza de la excepción (puede ser útil para depuración)
+            exception.printStackTrace();
+        }
+
+        // Devolver un mensaje de error si las credenciales son incorrectas
+        return new ResponseEntity<String>("{\"mensaje\":\"" + " Credenciales Incorrectas " + "\"}", HttpStatus.BAD_REQUEST);
+    }
 
 
     /**
@@ -87,6 +158,7 @@ public class UsuarioServicio implements IUsuarioServicio {
         user.setEmail(requestMap.get("email"));
         user.setPassword(requestMap.get("password"));
         user.setRole("user");
+        user.setStatus(false);
         return user;
     }
 

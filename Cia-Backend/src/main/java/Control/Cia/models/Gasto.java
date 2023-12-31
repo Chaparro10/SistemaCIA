@@ -21,6 +21,6 @@ public class Gasto extends PadreGastoyIngreso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long idGasto; // Identificador único del Gast
+    Long idGasto; // Identificador único del Gasto
 
 }

@@ -30,4 +30,5 @@ public class Usuario {
 
     private String Nombre; // Nombre de usuario (opción 2)
     private String role; // Rol del usuario en el sistema
+    private  boolean status;
 }

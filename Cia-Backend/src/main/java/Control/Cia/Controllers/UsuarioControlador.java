@@ -2,6 +2,7 @@ package Control.Cia.Controllers;
 
 import Control.Cia.Utils.FacturaUtils;
 import Control.Cia.excepcion.ServerError;
+import Control.Cia.models.Ingreso;
 import Control.Cia.models.Usuario;
 import Control.Cia.service.UsuarioServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +46,24 @@ public class UsuarioControlador {
         // Devuelve una respuesta de error genérica en caso de excepción
         return FacturaUtils.getResponseEntity("Error: " + new ServerError("Error Interno del Servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @PostMapping("Login")
+    public  ResponseEntity<String> Login(@RequestBody(required = true)Map<String, String> requestMap){
+        try{
+            return  usuarioServicio.Login(requestMap);
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return  FacturaUtils.getResponseEntity("Error: " + new ServerError("Error Interno del Servidor"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @CrossOrigin
+    @GetMapping("MuestraUser")
+    public List<Usuario> obtenerEmpleados() {
+        var user = usuarioServicio.ListarUsuarios();
+        return user;
+    }
+
 
 
 }

@@ -96,6 +96,14 @@
 			<version>2.10.1</version>
 		</dependency>
 
+		<!-- Despendencia Encriptado -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.69</version> <!-- Utiliza la versión más reciente -->
+		</dependency>
+
+
 
 
 
